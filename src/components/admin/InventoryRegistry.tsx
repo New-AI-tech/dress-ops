@@ -33,13 +33,13 @@ const InventoryRegistry = () => {
   async function fetchRegistry() {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data: registryData, error: registryError } = await supabase
         .from('dresses')
         .select('id, name, size, price, status, image_url')
         .order('name', { ascending: true });
 
-      if (error) throw error;
-      setDresses(data || []);
+      if (registryError) throw registryError;
+      setDresses(registryData || []);
     } catch (err) {
       console.error('Registry fetch error:', err);
     } finally {
@@ -74,7 +74,7 @@ const InventoryRegistry = () => {
             <input 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, designer..."
+              placeholder="Search by name, size, status..."
               className="bg-black border border-stone-800 pl-12 pr-6 py-3 text-sm text-white focus:border-gold outline-none w-80"
             />
           </div>

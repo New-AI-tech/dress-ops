@@ -147,7 +147,7 @@ const BookingCollisionDetector = () => {
               <input 
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name or designer..."
+                placeholder="Search by name or status..."
                 className="w-full bg-black border border-stone-800 pl-12 pr-4 py-4 text-white focus:border-gold outline-none rounded-sm"
               />
             </div>
