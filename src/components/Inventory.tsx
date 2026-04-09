@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.ts';
+import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils.ts';
 
 interface Dress {
@@ -55,9 +56,12 @@ const Inventory = () => {
                   alt={dress.name}
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                  <button className="w-full py-4 bg-gold text-black text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-white transition-colors">
+                  <Link 
+                    to={`/availability/${dress.id}`}
+                    className="block w-full py-4 bg-gold text-black text-[10px] text-center font-bold uppercase tracking-[0.3em] hover:bg-white transition-colors"
+                  >
                     Check Availability
-                  </button>
+                  </Link>
                 </div>
               </div>
 

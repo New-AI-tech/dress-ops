@@ -27,6 +27,7 @@ function App() {
             <Route path="/" element={<Hero />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/calendar" element={<AvailabilityShowcase />} />
+            <Route path="/availability/:dressId" element={<AvailabilityShowcase />} />
             
             {/* Admin & Staff Mandate Routes */}
             <Route path="/admin" element={<AdminDashboard />}>

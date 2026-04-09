@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Calendar as CalendarIcon, Info, RefreshCw, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase.ts';
 import Availability from './Availability';
@@ -12,6 +13,7 @@ interface Dress {
 }
 
 export default function AvailabilityShowcase() {
+  const { dressId } = useParams();
   const [dresses, setDresses] = useState<Dress[]>([]);
   const [selectedDress, setSelectedDress] = useState<Dress | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,12 +34,39 @@ export default function AvailabilityShowcase() {
       if (error) throw error;
       if (data) {
         setDresses(data);
-        setSelectedDress(data[0]);
+        if (dressId) {
+          const selected = data.find(d => d.id === dressId);
+          if (selected) {
+            setSelectedDress(selected);
+          } else {
+            // If not in the limited list, fetch it specifically
+            fetchSpecificDress(dressId);
+          }
+        } else {
+          setSelectedDress(data[0]);
+        }
       }
     } catch (error) {
       console.error('Error fetching dresses for showcase:', error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchSpecificDress(id: string) {
+    try {
+      const { data, error } = await supabase
+        .from('dresses')
+        .select('id, name, image_url, status')
+        .eq('id', id)
+        .single();
+      
+      if (error) throw error;
+      if (data) {
+        setSelectedDress(data);
+      }
+    } catch (error) {
+      console.error('Error fetching specific dress:', error);
     }
   }
 

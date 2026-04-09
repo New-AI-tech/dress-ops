@@ -4,11 +4,9 @@ import { Calendar as CalendarIcon, CheckCircle2, XCircle, RefreshCw } from 'luci
 import { cn } from '../lib/utils.ts';
 
 interface Booking {
-  id: string;
   dress_id: string;
   start_date: string;
   end_date: string;
-  status: string;
 }
 
 export default function Availability({ dressId }: { dressId: string }) {
@@ -29,7 +27,7 @@ export default function Availability({ dressId }: { dressId: string }) {
       setLoading(true);
       const { data, error } = await supabase
         .from('bookings')
-        .select('id, dress_id, start_date, end_date, status')
+        .select('dress_id, start_date, end_date')
         .eq('dress_id', dressId);
       
       if (error) throw error;
