@@ -21,6 +21,8 @@ export default function Navbar() {
     { name: 'Home', href: '/' },
     { name: 'Collection', href: '/inventory' },
     { name: 'Calendar', href: '/calendar' },
+    { name: 'Staff Portal', href: '/staff/booking' },
+    { name: 'Admin', href: '/admin' },
   ];
 
   return (
