@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase.ts';
 import { Calendar as CalendarIcon, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
+import { cn } from '../lib/utils.ts';
 
 interface Booking {
   id: string;

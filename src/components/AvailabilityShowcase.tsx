@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Info, RefreshCw, ChevronRight } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase.ts';
 import Availability from './Availability';
-import { cn } from '@/src/lib/utils';
+import { cn } from '../lib/utils.ts';
 
 interface Dress {
   id: string;
   name: string;
-  designer: string;
   image_url: string;
   status: string;
 }
@@ -26,7 +25,7 @@ export default function AvailabilityShowcase() {
       setLoading(true);
       const { data, error } = await supabase
         .from('dresses')
-        .select('id, name, designer, image_url, status')
+        .select('id, name, image_url, status')
         .eq('status', 'Available')
         .limit(6);
 
@@ -88,7 +87,6 @@ export default function AvailabilityShowcase() {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gold/60">{dress.designer}</p>
                     <h4 className="text-sm font-serif text-ivory truncate">{dress.name}</h4>
                   </div>
                   <ChevronRight className={cn(

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase.ts';
 import { 
   Search, 
   Calendar as CalendarIcon, 
@@ -10,13 +10,11 @@ import {
   User,
   ShieldAlert
 } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
-import { format, addHours, isWithinInterval, parseISO, addDays, startOfDay } from 'date-fns';
+import { cn } from '../../lib/utils.ts';
 
 interface Dress {
   id: string;
   name: string;
-  designer: string;
   status: string;
 }
 
@@ -60,8 +58,8 @@ const BookingCollisionDetector = () => {
   async function fetchDresses() {
     const { data } = await supabase
       .from('dresses')
-      .select('id, name, designer, status')
-      .or(`name.ilike.%${search}%,designer.ilike.%${search}%`)
+      .select('id, name, status')
+      .or(`name.ilike.%${search}%`)
       .limit(5);
     setDresses(data || []);
   }
@@ -81,19 +79,20 @@ const BookingCollisionDetector = () => {
       return;
     }
 
-    const requestedStart = parseISO(startDate);
-    const requestedEnd = parseISO(endDate);
+    const requestedStart = new Date(startDate).getTime();
+    const requestedEnd = new Date(endDate).getTime();
 
     const conflict = bookings.find(b => {
-      const bStart = parseISO(b.start_date);
-      const bEnd = parseISO(b.end_date);
+      const bStart = new Date(b.start_date).getTime();
+      const bEnd = new Date(b.end_date).getTime();
       
       // Default cleaning buffer of 48 hours
-      const bBufferEnd = addHours(bEnd, 48);
+      const bBufferEnd = bEnd + (48 * 60 * 60 * 1000);
 
+      // Check if requested interval overlaps with booking interval (including buffer)
       return (
-        isWithinInterval(requestedStart, { start: bStart, end: bBufferEnd }) ||
-        isWithinInterval(requestedEnd, { start: bStart, end: bBufferEnd }) ||
+        (requestedStart >= bStart && requestedStart <= bBufferEnd) ||
+        (requestedEnd >= bStart && requestedEnd <= bBufferEnd) ||
         (requestedStart <= bStart && requestedEnd >= bBufferEnd)
       );
     });
@@ -163,7 +162,6 @@ const BookingCollisionDetector = () => {
                   >
                     <div>
                       <p className="text-sm font-bold text-white tracking-tighter">{d.name}</p>
-                      <p className="text-[10px] text-stone-500 uppercase tracking-widest">{d.designer}</p>
                     </div>
                     <ArrowRight className="w-4 h-4 text-stone-700" />
                   </button>
@@ -177,7 +175,6 @@ const BookingCollisionDetector = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-2xl font-serif text-white">{selectedDress.name}</p>
-                  <p className="text-xs text-stone-500 italic">{selectedDress.designer}</p>
                 </div>
                 <button 
                   onClick={() => { setSelectedDress(null); setBookings([]); setCollision(null); }}
@@ -258,7 +255,7 @@ const BookingCollisionDetector = () => {
                 </div>
                 <div className="text-xs text-stone-400 space-y-2">
                   <p>Overlaps with existing booking for <span className="text-white font-bold">{collision.client_name}</span></p>
-                  <p className="font-mono">Timeline Block: {format(parseISO(collision.start_date), 'MMM d')} → {format(parseISO(collision.end_date), 'MMM d')}</p>
+                  <p className="font-mono">Timeline Block: {new Date(collision.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} → {new Date(collision.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                   <p className="text-[10px] text-red-500/60 uppercase font-bold tracking-tighter">Includes 48hr Cleaning SLA</p>
                 </div>
               </div>

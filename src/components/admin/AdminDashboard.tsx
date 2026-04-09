@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, PlusCircle, ListChecks, Settings } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
+import { cn } from '../../lib/utils.ts';
 
 const AdminDashboard = () => {
   const location = useLocation();

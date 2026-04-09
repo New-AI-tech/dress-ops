@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase.ts';
 import { 
   Search, 
   Filter, 
@@ -10,12 +10,11 @@ import {
   Clock,
   Trash2
 } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
+import { cn } from '../../lib/utils.ts';
 
 interface Dress {
   id: string;
   name: string;
-  designer: string;
   size: string;
   status: string;
   price: number;
@@ -36,7 +35,7 @@ const InventoryRegistry = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('dresses')
-        .select('id, name, designer, size, price, status, image_url')
+        .select('id, name, size, price, status, image_url')
         .order('name', { ascending: true });
 
       if (error) throw error;
@@ -49,8 +48,7 @@ const InventoryRegistry = () => {
   }
 
   const filtered = dresses.filter(d => 
-    d.name.toLowerCase().includes(search.toLowerCase()) ||
-    d.designer.toLowerCase().includes(search.toLowerCase())
+    d.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const getStatusColor = (state: string) => {
@@ -120,7 +118,6 @@ const InventoryRegistry = () => {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-white uppercase tracking-tight">{dress.name}</p>
-                      <p className="text-xs text-stone-500 italic">{dress.designer}</p>
                     </div>
                   </div>
                 </td>

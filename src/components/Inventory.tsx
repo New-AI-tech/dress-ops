@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
-import { cn } from '@/src/lib/utils';
+import { supabase } from '../lib/supabase.ts';
+import { cn } from '../lib/utils.ts';
 
 interface Dress {
   id: string;
   name: string;
-  designer: string;
   size: string;
   price: number;
   status: string;
@@ -21,7 +20,7 @@ const Inventory = () => {
       try {
         const { data, error } = await supabase
           .from('dresses')
-          .select('id, name, designer, size, price, status, image_url')
+          .select('id, name, size, price, status, image_url')
           .order('name', { ascending: true });
 
         if (error) throw error;
@@ -65,7 +64,6 @@ const Inventory = () => {
               <div className="space-y-4 px-2">
                 <div className="flex justify-between items-end">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold/60">{dress.designer}</p>
                     <h3 className="text-2xl font-serif text-white tracking-tight">{dress.name}</h3>
                   </div>
                   <span className="text-xl font-serif text-white">AED {dress.price}</span>

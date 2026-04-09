@@ -12,8 +12,8 @@ import {
   Palette,
   ShieldCheck
 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
-import { cn } from '@/src/lib/utils';
+import { supabase } from '../../lib/supabase.ts';
+import { cn } from '../../lib/utils.ts';
 
 const STEPS = [
   { id: 1, title: 'Identity', icon: Tag },
@@ -31,7 +31,6 @@ const DressOnboarding = () => {
 
   const [formData, setFormData] = useState({
     name: '',
-    designer: '',
     size: '',
     price: '',
     status: 'Available',
@@ -135,7 +134,7 @@ const DressOnboarding = () => {
             className="space-y-8"
           >
             {currentStep === 1 && (
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid md:grid-cols-1 gap-8">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Display Name</label>
                   <input 
@@ -144,16 +143,6 @@ const DressOnboarding = () => {
                     onChange={handleInputChange}
                     className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
                     placeholder="e.g. Ivory Mermaid Gown"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Designer / Brand</label>
-                  <input 
-                    name="designer"
-                    value={formData.designer}
-                    onChange={handleInputChange}
-                    className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
-                    placeholder="e.g. Vera Wang"
                   />
                 </div>
               </div>
