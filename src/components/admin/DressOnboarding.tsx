@@ -30,19 +30,12 @@ const DressOnboarding = () => {
   const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
-    internal_code: '',
     name: '',
-    category: 'Wedding',
     designer: '',
     size: '',
-    color: '',
-    condition_grade: 'A',
-    base_price: '',
-    cleaning_buffer_hours: '48',
-    alteration_allowed: false,
+    price: '',
+    status: 'Available',
     image_url: '',
-    location_state: 'in-shop',
-    notes: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -63,8 +56,7 @@ const DressOnboarding = () => {
         .from('dresses')
         .insert([{
           ...formData,
-          base_price: parseFloat(formData.base_price),
-          cleaning_buffer_hours: parseInt(formData.cleaning_buffer_hours)
+          price: parseFloat(formData.price),
         }]);
 
       if (insertError) throw insertError;
@@ -86,7 +78,7 @@ const DressOnboarding = () => {
         </div>
         <h2 className="text-3xl font-serif text-white">Asset Registry Initialized</h2>
         <p className="text-stone-500 max-w-md">
-          Dress {formData.internal_code} has been successfully onboarded into the temporal database.
+          Dress {formData.name} has been successfully onboarded into the database.
         </p>
         <button 
           onClick={() => window.location.reload()}
@@ -102,7 +94,7 @@ const DressOnboarding = () => {
     <div className="space-y-10">
       <header className="space-y-2">
         <h2 className="text-3xl font-serif text-white">Dress Onboarding Flow</h2>
-        <p className="text-stone-500">Initialize a new trackable unit with lifecycle metadata.</p>
+        <p className="text-stone-500">Initialize a new garment in the collection.</p>
       </header>
 
       {/* Progress Bar */}
@@ -145,16 +137,6 @@ const DressOnboarding = () => {
             {currentStep === 1 && (
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Internal Code (WD-XXX)</label>
-                  <input 
-                    name="internal_code"
-                    value={formData.internal_code}
-                    onChange={handleInputChange}
-                    className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
-                    placeholder="e.g. WD-402"
-                  />
-                </div>
-                <div className="space-y-2">
                   <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Display Name</label>
                   <input 
                     name="name"
@@ -165,18 +147,14 @@ const DressOnboarding = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Category</label>
-                  <select 
-                    name="category"
-                    value={formData.category}
+                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Designer / Brand</label>
+                  <input 
+                    name="designer"
+                    value={formData.designer}
                     onChange={handleInputChange}
                     className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
-                  >
-                    <option>Wedding</option>
-                    <option>Cocktail</option>
-                    <option>Modest</option>
-                    <option>Evening</option>
-                  </select>
+                    placeholder="e.g. Vera Wang"
+                  />
                 </div>
               </div>
             )}
@@ -184,46 +162,14 @@ const DressOnboarding = () => {
             {currentStep === 2 && (
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Size (Numerical + Notes)</label>
+                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Size</label>
                   <input 
                     name="size"
                     value={formData.size}
                     onChange={handleInputChange}
                     className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
-                    placeholder="e.g. 38 (Small Fit)"
+                    placeholder="e.g. 38"
                   />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Exact Color Shade</label>
-                  <input 
-                    name="color"
-                    value={formData.color}
-                    onChange={handleInputChange}
-                    className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
-                    placeholder="e.g. Champagne Ivory"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Designer / Brand</label>
-                  <input 
-                    name="designer"
-                    value={formData.designer}
-                    onChange={handleInputChange}
-                    className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Condition Grade</label>
-                  <select 
-                    name="condition_grade"
-                    value={formData.condition_grade}
-                    onChange={handleInputChange}
-                    className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
-                  >
-                    <option value="A">Grade A (Pristine)</option>
-                    <option value="B">Grade B (Minor Wear)</option>
-                    <option value="C">Grade C (Damaged/Repair Needed)</option>
-                  </select>
                 </div>
               </div>
             )}
@@ -232,21 +178,15 @@ const DressOnboarding = () => {
               <div className="space-y-6">
                 <div className="border-2 border-dashed border-stone-800 rounded-sm p-12 flex flex-col items-center justify-center gap-4 hover:border-gold/30 transition-all cursor-pointer">
                   <Upload className="w-10 h-10 text-stone-600" />
-                  <p className="text-stone-500 text-sm">Drag and drop forensic documentation photos</p>
+                  <p className="text-stone-500 text-sm">Upload garment photos</p>
                   <input 
                     type="url" 
                     name="image_url"
                     value={formData.image_url}
                     onChange={handleInputChange}
-                    placeholder="Or paste primary image URL for now"
+                    placeholder="Paste image URL"
                     className="w-full max-w-md bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none text-center"
                   />
-                </div>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="aspect-square bg-black border border-stone-800 rounded-sm flex items-center justify-center text-stone-700 text-[10px] uppercase font-bold">Front View</div>
-                  <div className="aspect-square bg-black border border-stone-800 rounded-sm flex items-center justify-center text-stone-700 text-[10px] uppercase font-bold">Back View</div>
-                  <div className="aspect-square bg-black border border-stone-800 rounded-sm flex items-center justify-center text-stone-700 text-[10px] uppercase font-bold">Detail Shot</div>
-                  <div className="aspect-square bg-black border border-stone-800 rounded-sm flex items-center justify-center text-stone-700 text-[10px] uppercase font-bold">Condition</div>
                 </div>
               </div>
             )}
@@ -254,34 +194,14 @@ const DressOnboarding = () => {
             {currentStep === 4 && (
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Base Rental Price (AED)</label>
+                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Rental Price (AED)</label>
                   <input 
                     type="number"
-                    name="base_price"
-                    value={formData.base_price}
+                    name="price"
+                    value={formData.price}
                     onChange={handleInputChange}
                     className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
                   />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Cleaning SLA (Hours)</label>
-                  <input 
-                    type="number"
-                    name="cleaning_buffer_hours"
-                    value={formData.cleaning_buffer_hours}
-                    onChange={handleInputChange}
-                    className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
-                  />
-                </div>
-                <div className="flex items-center gap-3 pt-4">
-                  <input 
-                    type="checkbox"
-                    name="alteration_allowed"
-                    checked={formData.alteration_allowed}
-                    onChange={handleInputChange}
-                    className="w-4 h-4 accent-gold"
-                  />
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Alterations Allowed</label>
                 </div>
               </div>
             )}
@@ -289,29 +209,17 @@ const DressOnboarding = () => {
             {currentStep === 5 && (
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Initial Location State</label>
+                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Initial Status</label>
                   <select 
-                    name="location_state"
-                    value={formData.location_state}
+                    name="status"
+                    value={formData.status}
                     onChange={handleInputChange}
                     className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
                   >
-                    <option value="in-shop">In-Shop (Ready)</option>
-                    <option value="cleaning">Out for Cleaning</option>
-                    <option value="transit">In-Transit</option>
-                    <option value="maintenance">Under Maintenance</option>
+                    <option value="Available">Available</option>
+                    <option value="Rented">Rented</option>
+                    <option value="Maintenance">Maintenance</option>
                   </select>
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Internal Notes</label>
-                  <textarea 
-                    name="notes"
-                    value={formData.notes}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none resize-none"
-                    placeholder="Any specific handling instructions or history notes..."
-                  />
                 </div>
               </div>
             )}
@@ -351,7 +259,7 @@ const DressOnboarding = () => {
             disabled={loading}
             className="flex items-center gap-2 bg-gold text-black px-10 py-3 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-gold-light transition-all disabled:opacity-50"
           >
-            {loading ? 'Initializing...' : 'Initialize Asset Registry'}
+            {loading ? 'Initializing...' : 'Initialize Asset'}
           </button>
         )}
       </div>

@@ -15,11 +15,9 @@ import { format, addHours, isWithinInterval, parseISO, addDays, startOfDay } fro
 
 interface Dress {
   id: string;
-  internal_code: string;
   name: string;
   designer: string;
-  location_state: string;
-  cleaning_buffer_hours: number;
+  status: string;
 }
 
 interface Booking {
@@ -62,8 +60,8 @@ const BookingCollisionDetector = () => {
   async function fetchDresses() {
     const { data } = await supabase
       .from('dresses')
-      .select('*')
-      .or(`internal_code.ilike.%${search}%,name.ilike.%${search}%`)
+      .select('id, name, designer, status')
+      .or(`name.ilike.%${search}%,designer.ilike.%${search}%`)
       .limit(5);
     setDresses(data || []);
   }
@@ -90,8 +88,8 @@ const BookingCollisionDetector = () => {
       const bStart = parseISO(b.start_date);
       const bEnd = parseISO(b.end_date);
       
-      // Add cleaning buffer to existing booking end
-      const bBufferEnd = addHours(bEnd, selectedDress?.cleaning_buffer_hours || 48);
+      // Default cleaning buffer of 48 hours
+      const bBufferEnd = addHours(bEnd, 48);
 
       return (
         isWithinInterval(requestedStart, { start: bStart, end: bBufferEnd }) ||
@@ -150,7 +148,7 @@ const BookingCollisionDetector = () => {
               <input 
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Enter Dress Code (e.g. WD-402)"
+                placeholder="Search by name or designer..."
                 className="w-full bg-black border border-stone-800 pl-12 pr-4 py-4 text-white focus:border-gold outline-none rounded-sm"
               />
             </div>
@@ -160,12 +158,12 @@ const BookingCollisionDetector = () => {
                 {dresses.map(d => (
                   <button 
                     key={d.id}
-                    onClick={() => { setSelectedDress(d); setSearch(d.internal_code); setDresses([]); }}
+                    onClick={() => { setSelectedDress(d); setSearch(d.name); setDresses([]); }}
                     className="w-full px-4 py-3 text-left hover:bg-stone-800 transition-colors flex justify-between items-center"
                   >
                     <div>
-                      <p className="text-sm font-bold text-white tracking-tighter">{d.internal_code}</p>
-                      <p className="text-[10px] text-stone-500 uppercase tracking-widest">{d.name}</p>
+                      <p className="text-sm font-bold text-white tracking-tighter">{d.name}</p>
+                      <p className="text-[10px] text-stone-500 uppercase tracking-widest">{d.designer}</p>
                     </div>
                     <ArrowRight className="w-4 h-4 text-stone-700" />
                   </button>
@@ -178,8 +176,8 @@ const BookingCollisionDetector = () => {
             <div className="bg-stone-900/50 border border-stone-800 p-6 rounded-sm space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-2xl font-serif text-white">{selectedDress.internal_code}</p>
-                  <p className="text-xs text-stone-500 italic">{selectedDress.name}</p>
+                  <p className="text-2xl font-serif text-white">{selectedDress.name}</p>
+                  <p className="text-xs text-stone-500 italic">{selectedDress.designer}</p>
                 </div>
                 <button 
                   onClick={() => { setSelectedDress(null); setBookings([]); setCollision(null); }}
@@ -191,10 +189,10 @@ const BookingCollisionDetector = () => {
               <div className="pt-4 border-t border-stone-800 flex items-center gap-3">
                 <div className={cn(
                   "w-2 h-2 rounded-full",
-                  selectedDress.location_state === 'in-shop' ? "bg-green-500" : "bg-gold"
+                  selectedDress.status === 'Available' ? "bg-green-500" : "bg-gold"
                 )} />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">
-                  Current: {selectedDress.location_state.replace('-', ' ')}
+                  Current: {selectedDress.status}
                 </span>
               </div>
             </div>
@@ -261,7 +259,7 @@ const BookingCollisionDetector = () => {
                 <div className="text-xs text-stone-400 space-y-2">
                   <p>Overlaps with existing booking for <span className="text-white font-bold">{collision.client_name}</span></p>
                   <p className="font-mono">Timeline Block: {format(parseISO(collision.start_date), 'MMM d')} → {format(parseISO(collision.end_date), 'MMM d')}</p>
-                  <p className="text-[10px] text-red-500/60 uppercase font-bold tracking-tighter">Includes {selectedDress.cleaning_buffer_hours}hr Cleaning SLA</p>
+                  <p className="text-[10px] text-red-500/60 uppercase font-bold tracking-tighter">Includes 48hr Cleaning SLA</p>
                 </div>
               </div>
             ) : startDate && endDate ? (
@@ -292,5 +290,4 @@ const BookingCollisionDetector = () => {
     </div>
   );
 };
-
 export default BookingCollisionDetector;

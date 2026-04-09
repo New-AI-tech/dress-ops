@@ -4,12 +4,11 @@ import { cn } from '@/src/lib/utils';
 
 interface Dress {
   id: string;
-  internal_code: string;
   name: string;
   designer: string;
   size: string;
-  base_price: number;
-  location_state: string;
+  price: number;
+  status: string;
   image_url: string;
 }
 
@@ -22,8 +21,8 @@ const Inventory = () => {
       try {
         const { data, error } = await supabase
           .from('dresses')
-          .select('*')
-          .order('internal_code', { ascending: true });
+          .select('id, name, designer, size, price, status, image_url')
+          .order('name', { ascending: true });
 
         if (error) throw error;
         setDresses(data || []);
@@ -56,11 +55,6 @@ const Inventory = () => {
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80 group-hover:opacity-100"
                   alt={dress.name}
                 />
-                <div className="absolute top-6 left-6">
-                  <span className="bg-black/80 backdrop-blur-md border border-gold/30 text-gold px-3 py-1 text-[10px] font-mono font-bold tracking-tighter">
-                    {dress.internal_code}
-                  </span>
-                </div>
                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                   <button className="w-full py-4 bg-gold text-black text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-white transition-colors">
                     Check Availability
@@ -74,7 +68,7 @@ const Inventory = () => {
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold/60">{dress.designer}</p>
                     <h3 className="text-2xl font-serif text-white tracking-tight">{dress.name}</h3>
                   </div>
-                  <span className="text-xl font-serif text-white">AED {dress.base_price}</span>
+                  <span className="text-xl font-serif text-white">AED {dress.price}</span>
                 </div>
 
                 <div className="flex justify-between items-center pt-4 border-t border-stone-900">
@@ -82,10 +76,10 @@ const Inventory = () => {
                   <div className="flex items-center gap-2">
                     <div className={cn(
                       "w-1.5 h-1.5 rounded-full",
-                      dress.location_state === 'in-shop' ? "bg-green-500" : "bg-gold"
+                      dress.status === 'Available' ? "bg-green-500" : "bg-gold"
                     )} />
                     <span className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-bold">
-                      {dress.location_state.replace('-', ' ')}
+                      {dress.status}
                     </span>
                   </div>
                 </div>

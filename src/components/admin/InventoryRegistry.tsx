@@ -14,14 +14,11 @@ import { cn } from '@/src/lib/utils';
 
 interface Dress {
   id: string;
-  internal_code: string;
   name: string;
   designer: string;
   size: string;
-  color: string;
-  condition_grade: string;
-  location_state: string;
-  base_price: number;
+  status: string;
+  price: number;
   image_url: string;
 }
 
@@ -39,8 +36,8 @@ const InventoryRegistry = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('dresses')
-        .select('*')
-        .order('internal_code', { ascending: true });
+        .select('id, name, designer, size, price, status, image_url')
+        .order('name', { ascending: true });
 
       if (error) throw error;
       setDresses(data || []);
@@ -52,17 +49,15 @@ const InventoryRegistry = () => {
   }
 
   const filtered = dresses.filter(d => 
-    d.internal_code.toLowerCase().includes(search.toLowerCase()) ||
     d.name.toLowerCase().includes(search.toLowerCase()) ||
     d.designer.toLowerCase().includes(search.toLowerCase())
   );
 
   const getStatusColor = (state: string) => {
     switch (state) {
-      case 'in-shop': return 'text-green-500 bg-green-500/10 border-green-500/20';
-      case 'cleaning': return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
-      case 'rented': return 'text-gold bg-gold/10 border-gold/20';
-      case 'maintenance': return 'text-red-500 bg-red-500/10 border-red-500/20';
+      case 'Available': return 'text-green-500 bg-green-500/10 border-green-500/20';
+      case 'Rented': return 'text-gold bg-gold/10 border-gold/20';
+      case 'Maintenance': return 'text-red-500 bg-red-500/10 border-red-500/20';
       default: return 'text-stone-500 bg-stone-500/10 border-stone-500/20';
     }
   };
@@ -81,7 +76,7 @@ const InventoryRegistry = () => {
             <input 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by code, name, designer..."
+              placeholder="Search by name, designer..."
               className="bg-black border border-stone-800 pl-12 pr-6 py-3 text-sm text-white focus:border-gold outline-none w-80"
             />
           </div>
@@ -95,10 +90,9 @@ const InventoryRegistry = () => {
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-stone-800 bg-stone-900/50">
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">Asset Code</th>
               <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">Garment Details</th>
               <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">Physical State</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">Location State</th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">Status</th>
               <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">Rental Value</th>
               <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">Actions</th>
             </tr>
@@ -106,17 +100,14 @@ const InventoryRegistry = () => {
           <tbody className="divide-y divide-stone-800">
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-6 py-20 text-center text-stone-600 font-serif italic">Synchronizing registry...</td>
+                <td colSpan={5} className="px-6 py-20 text-center text-stone-600 font-serif italic">Synchronizing registry...</td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-20 text-center text-stone-600 font-serif italic">No assets found in registry.</td>
+                <td colSpan={5} className="px-6 py-20 text-center text-stone-600 font-serif italic">No assets found in registry.</td>
               </tr>
             ) : filtered.map((dress) => (
               <tr key={dress.id} className="hover:bg-stone-900/20 transition-colors group">
-                <td className="px-6 py-4">
-                  <span className="text-gold font-mono font-bold tracking-tighter">{dress.internal_code}</span>
-                </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-16 bg-black border border-stone-800 rounded-sm overflow-hidden shrink-0">
@@ -136,26 +127,18 @@ const InventoryRegistry = () => {
                 <td className="px-6 py-4">
                   <div className="flex flex-col gap-1">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Size {dress.size}</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className={cn(
-                        "w-2 h-2 rounded-full",
-                        dress.condition_grade === 'A' ? "bg-green-500" : 
-                        dress.condition_grade === 'B' ? "bg-gold" : "bg-red-500"
-                      )} />
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-stone-600">Grade {dress.condition_grade}</span>
-                    </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   <span className={cn(
                     "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
-                    getStatusColor(dress.location_state)
+                    getStatusColor(dress.status)
                   )}>
-                    {dress.location_state.replace('-', ' ')}
+                    {dress.status}
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="text-sm font-serif text-white">AED {dress.base_price}</span>
+                  <span className="text-sm font-serif text-white">AED {dress.price}</span>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
