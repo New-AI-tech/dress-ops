@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ShoppingBag, ChevronRight } from 'lucide-react';
 
@@ -41,7 +42,7 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden px-6"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden px-6"
     >
       {/* Background Elements */}
       <div className="absolute inset-0 z-0">
@@ -72,16 +73,19 @@ export default function Hero() {
           </p>
 
           <div className="hero-text flex flex-wrap gap-4 pt-4">
-            <button className="bg-gold hover:bg-gold-light text-charcoal px-8 py-4 rounded-full text-sm font-bold transition-all transform hover:scale-105 flex items-center gap-2 uppercase tracking-widest group">
+            <Link 
+              to="/inventory"
+              className="bg-gold hover:bg-gold-light text-charcoal px-8 py-4 rounded-full text-sm font-bold transition-all transform hover:scale-105 flex items-center gap-2 uppercase tracking-widest group"
+            >
               Manage Your Inventory
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button 
-              onClick={() => document.getElementById('calendar')?.scrollIntoView({ behavior: 'smooth' })}
+            </Link>
+            <Link 
+              to="/calendar"
               className="px-8 py-4 rounded-full text-sm font-bold border border-ivory/20 hover:border-gold hover:text-gold transition-all uppercase tracking-widest"
             >
               See Live Demo Calendar
-            </button>
+            </Link>
           </div>
 
           <div className="hero-text pt-8 flex items-center gap-4 text-xs font-medium text-ivory/40 uppercase tracking-widest">

@@ -4,10 +4,11 @@
  */
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Inventory from './components/Inventory';
+import AvailabilityShowcase from './components/AvailabilityShowcase';
 import Footer from './components/Footer';
 
 function App() {
@@ -15,10 +16,14 @@ function App() {
     <Router>
       <div className="min-h-screen bg-black text-white selection:bg-gold-500">
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Hero />} />
-          <Route path="/inventory" element={<Inventory />} />
-        </Routes>
+        <main className="pt-20">
+          <Routes>
+            <Route path="/" element={<Hero />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/calendar" element={<AvailabilityShowcase />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
         <Footer />
       </div>
     </Router>

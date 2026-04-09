@@ -20,6 +20,7 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Collection', href: '/inventory' },
+    { name: 'Calendar', href: '/calendar' },
   ];
 
   return (
