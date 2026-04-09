@@ -16,6 +16,7 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import DressOnboarding from './components/admin/DressOnboarding';
 import InventoryRegistry from './components/admin/InventoryRegistry';
 import BookingCollisionDetector from './components/staff/BookingCollisionDetector';
+import StaffDashboard from './components/staff/StaffDashboard';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
               <Route path="onboarding" element={<DressOnboarding />} />
             </Route>
             <Route path="/staff/booking" element={<BookingCollisionDetector />} />
+            <Route path="/staff/dashboard" element={<StaffDashboard />} />
             
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

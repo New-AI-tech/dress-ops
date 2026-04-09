@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.ts';
 import { 
   Search, 
@@ -23,10 +24,11 @@ interface Booking {
   dress_id: string;
   start_date: string;
   end_date: string;
-  client_name: string;
+  customer_name: string;
 }
 
 const BookingCollisionDetector = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [selectedDress, setSelectedDress] = useState<Dress | null>(null);
   const [dresses, setDresses] = useState<Dress[]>([]);
@@ -109,7 +111,7 @@ const BookingCollisionDetector = () => {
         .from('bookings')
         .insert([{
           dress_id: selectedDress.id,
-          client_name: clientName,
+          customer_name: clientName,
           start_date: startDate,
           end_date: endDate,
           status: 'confirmed'
@@ -117,11 +119,15 @@ const BookingCollisionDetector = () => {
 
       if (error) throw error;
       
-      alert('Reservation secured successfully.');
-      window.location.reload();
-    } catch (err) {
-      console.error('Booking error:', err);
-      alert('Failed to secure reservation.');
+      navigate('/staff/dashboard');
+    } catch (err: any) {
+      console.error('CRITICAL_BOOKING_FAILURE:', {
+        message: err.message,
+        code: err.code,
+        details: err.details,
+        hint: err.hint,
+        postgres_error: err // Log the full error object for Postgres details
+      });
     } finally {
       setLoading(false);
     }
@@ -254,7 +260,7 @@ const BookingCollisionDetector = () => {
                   <p className="text-sm font-bold uppercase tracking-widest">Collision Detected</p>
                 </div>
                 <div className="text-xs text-stone-400 space-y-2">
-                  <p>Overlaps with existing booking for <span className="text-white font-bold">{collision.client_name}</span></p>
+                  <p>Overlaps with existing booking for <span className="text-white font-bold">{collision.customer_name}</span></p>
                   <p className="font-mono">Timeline Block: {new Date(collision.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} → {new Date(collision.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                   <p className="text-[10px] text-red-500/60 uppercase font-bold tracking-tighter">Includes 48hr Cleaning SLA</p>
                 </div>

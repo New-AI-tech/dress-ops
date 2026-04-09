@@ -7,6 +7,7 @@ interface Booking {
   dress_id: string;
   start_date: string;
   end_date: string;
+  customer_name: string;
 }
 
 export default function Availability({ dressId }: { dressId: string }) {
@@ -62,6 +63,7 @@ export default function Availability({ dressId }: { dressId: string }) {
           dress_id: dressId,
           start_date: selectedDate,
           end_date: selectedDate,
+          customer_name: 'Guest Client',
           status: 'Confirmed'
         }]);
 
