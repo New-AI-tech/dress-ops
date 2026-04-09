@@ -6,8 +6,9 @@ import { cn } from '../lib/utils.ts';
 interface Booking {
   id: string;
   dress_id: string;
-  booking_date: string;
-  client_name: string;
+  start_date: string;
+  end_date: string;
+  status: string;
 }
 
 export default function Availability({ dressId }: { dressId: string }) {
@@ -28,11 +29,23 @@ export default function Availability({ dressId }: { dressId: string }) {
       setLoading(true);
       const { data, error } = await supabase
         .from('bookings')
-        .select('booking_date')
+        .select('id, dress_id, start_date, end_date, status')
         .eq('dress_id', dressId);
       
       if (error) throw error;
-      if (data) setBookedDates(data.map(b => b.booking_date));
+      if (data) {
+        const dates: string[] = [];
+        data.forEach(b => {
+          const start = new Date(b.start_date);
+          const end = new Date(b.end_date);
+          const current = new Date(start);
+          while (current <= end) {
+            dates.push(current.toISOString().split('T')[0]);
+            current.setDate(current.getDate() + 1);
+          }
+        });
+        setBookedDates(dates);
+      }
     } catch (error) {
       console.error('Error fetching bookings:', error);
     } finally {
@@ -49,8 +62,9 @@ export default function Availability({ dressId }: { dressId: string }) {
         .from('bookings')
         .insert([{
           dress_id: dressId,
-          booking_date: selectedDate,
-          client_name: 'Guest Client' // In a real app, this would come from auth or a form
+          start_date: selectedDate,
+          end_date: selectedDate,
+          status: 'Confirmed'
         }]);
 
       if (error) throw error;
