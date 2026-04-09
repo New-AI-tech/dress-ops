@@ -7,7 +7,12 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
   --color-charcoal: #0A0A0A;
+  --color-black: #000000;
+  --color-stone-900: #1C1917;
+  --color-stone-800: #292524;
+  --color-stone-700: #44403C;
   --color-gold: #D4AF37;
+  --color-gold-500: #D4AF37;
   --color-gold-light: #E5C76B;
   --color-ivory: #F5F5F0;
   --color-ivory-dark: #E5E5DF;

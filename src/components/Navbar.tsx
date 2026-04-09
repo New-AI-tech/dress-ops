@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/src/lib/utils';
 
-export default function Navbar({ onAdminToggle, currentView }: { onAdminToggle: () => void, currentView: 'public' | 'admin' }) {
+export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,10 +18,8 @@ export default function Navbar({ onAdminToggle, currentView }: { onAdminToggle: 
   }, []);
 
   const navLinks = [
-    { name: 'Platform', href: '#platform' },
-    { name: 'Inventory', href: '#inventory' },
-    { name: 'Calendar', href: '#calendar' },
-    { name: 'Pricing', href: '#pricing' },
+    { name: 'Home', href: '/' },
+    { name: 'Collection', href: '/inventory' },
   ];
 
   return (
@@ -30,31 +30,28 @@ export default function Navbar({ onAdminToggle, currentView }: { onAdminToggle: 
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <Link to="/" className="flex items-center gap-2 cursor-pointer">
           <span className="text-2xl font-serif font-bold tracking-tighter text-gold">
             FARYAL AL HOSARY
           </span>
           <ShoppingBag className="w-5 h-5 text-gold" />
-        </div>
+        </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
-          {currentView === 'public' && navLinks.map((link) => (
-            <a
+          {navLinks.map((link) => (
+            <Link
               key={link.name}
-              href={link.href}
-              className="text-sm font-medium text-ivory/70 hover:text-gold transition-colors uppercase tracking-widest"
+              to={link.href}
+              className={cn(
+                "text-sm font-medium transition-colors uppercase tracking-widest",
+                location.pathname === link.href ? "text-gold" : "text-ivory/70 hover:text-gold"
+              )}
             >
               {link.name}
-            </a>
+            </Link>
           ))}
           <div className="flex items-center gap-4 ml-4">
-            <button 
-              onClick={onAdminToggle}
-              className="text-sm font-medium text-gold hover:text-gold-light transition-colors uppercase tracking-widest border border-gold/20 px-4 py-2 rounded-full"
-            >
-              {currentView === 'public' ? 'Admin Portal' : 'Exit Admin'}
-            </button>
             <button className="bg-gold hover:bg-gold-light text-charcoal px-6 py-2 rounded-full text-sm font-bold transition-all transform hover:scale-105 uppercase tracking-widest">
               Request Access
             </button>

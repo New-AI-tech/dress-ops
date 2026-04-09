@@ -3,39 +3,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import ProblemSolution from './components/ProblemSolution';
 import Inventory from './components/Inventory';
-import Features from './components/Features';
-import AvailabilityShowcase from './components/AvailabilityShowcase';
-import ContactForm from './components/ContactForm';
 import Footer from './components/Footer';
 
-export default function App() {
-  const [view, setView] = useState<'public' | 'admin'>('public');
-
+function App() {
   return (
-    <div className="min-h-screen bg-charcoal selection:bg-gold selection:text-charcoal">
-      <Navbar onAdminToggle={() => setView(prev => prev === 'public' ? 'admin' : 'public')} currentView={view} />
-      <main>
-        {view === 'public' ? (
-          <>
-            <Hero />
-            <ProblemSolution />
-            <Inventory isAdmin={false} />
-            <Features />
-            <AvailabilityShowcase />
-            <ContactForm />
-          </>
-        ) : (
-          <div className="pt-32 pb-24">
-            <Inventory isAdmin={true} />
-          </div>
-        )}
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <div className="min-h-screen bg-black text-white selection:bg-gold-500">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Hero />} />
+          <Route path="/inventory" element={<Inventory />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
   );
 }
+
+export default App;

@@ -88,20 +88,20 @@ export default function Availability({ dressId }: { dressId: string }) {
   }
 
   return (
-    <div className="glass p-6 rounded-3xl border-gold/10 space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <CalendarIcon className="w-5 h-5 text-gold" />
-          <h4 className="text-lg font-serif">Reservation Calendar</h4>
+    <div className="bg-black p-8 rounded-sm border border-stone-800 space-y-8">
+      <div className="flex items-center justify-between border-b border-stone-800 pb-6">
+        <div className="flex items-center gap-4">
+          <CalendarIcon className="w-6 h-6 text-gold" />
+          <h4 className="text-xl font-serif tracking-tight">Atelier Schedule</h4>
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-ivory/40">
+        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-500">
           {new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(today)}
         </span>
       </div>
 
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 gap-3">
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => (
-          <div key={d} className="text-center text-[10px] font-bold text-ivory/20 py-2">{d}</div>
+          <div key={d} className="text-center text-[10px] font-bold text-stone-600 py-2 tracking-widest">{d}</div>
         ))}
         {days.map((dateStr) => {
           const isBooked = bookedDates.includes(dateStr);
@@ -115,30 +115,30 @@ export default function Availability({ dressId }: { dressId: string }) {
               disabled={isBooked || isPast}
               onClick={() => setSelectedDate(dateStr)}
               className={cn(
-                "aspect-square rounded-xl text-xs font-medium transition-all flex items-center justify-center relative group",
+                "aspect-square rounded-sm text-xs transition-all flex items-center justify-center relative group border",
                 isBooked || isPast 
-                  ? "bg-ivory/5 text-ivory/10 cursor-not-allowed" 
+                  ? "bg-stone-900/50 border-stone-800/50 text-stone-700 cursor-not-allowed" 
                   : isSelected 
-                    ? "bg-gold text-charcoal shadow-[0_0_15px_rgba(212,175,55,0.4)]"
-                    : "bg-charcoal/50 border border-ivory/5 text-ivory/60 hover:border-gold/50 hover:text-gold"
+                    ? "bg-gold text-black border-gold shadow-[0_0_20px_rgba(212,175,55,0.2)]"
+                    : "bg-black border-stone-800 text-stone-400 hover:border-gold/50 hover:text-gold"
               )}
             >
               {dayNum}
               {isBooked && (
-                <div className="absolute top-1 right-1 w-1 h-1 rounded-full bg-red-500/50" />
+                <div className="absolute top-1 right-1 w-1 h-1 rounded-full bg-red-500/30" />
               )}
             </button>
           );
         })}
       </div>
 
-      <div className="space-y-4">
-        <div className="flex flex-wrap gap-4 text-[10px] font-bold uppercase tracking-widest text-ivory/40">
+      <div className="space-y-6 pt-4">
+        <div className="flex flex-wrap gap-6 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-gold" /> Available
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-ivory/10" /> Reserved
+            <div className="w-2 h-2 rounded-full bg-stone-800" /> Reserved
           </div>
         </div>
 
@@ -146,19 +146,19 @@ export default function Availability({ dressId }: { dressId: string }) {
           <button
             onClick={handleBook}
             disabled={isBooking}
-            className="w-full bg-gold hover:bg-gold-light text-charcoal py-4 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+            className="w-full bg-transparent border border-gold text-gold hover:bg-gold hover:text-black py-4 rounded-sm text-xs font-bold uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3"
           >
             {isBooking ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
-              <>Reserve for {new Date(selectedDate).toLocaleDateString()}</>
+              <>Confirm Reservation: {new Date(selectedDate).toLocaleDateString()}</>
             )}
           </button>
         )}
 
         {bookingSuccess && (
-          <div className="flex items-center justify-center gap-2 text-green-500 text-[10px] font-bold uppercase tracking-widest animate-bounce">
-            <CheckCircle2 className="w-4 h-4" /> Reservation Confirmed
+          <div className="flex items-center justify-center gap-3 text-gold text-[10px] font-bold uppercase tracking-[0.3em] animate-pulse">
+            <CheckCircle2 className="w-5 h-5" /> Reservation Secured
           </div>
         )}
       </div>
