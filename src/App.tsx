@@ -6,6 +6,7 @@
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ProblemSolution from './components/ProblemSolution';
+import Inventory from './components/Inventory';
 import Features from './components/Features';
 import AvailabilityShowcase from './components/AvailabilityShowcase';
 import ContactForm from './components/ContactForm';
@@ -18,6 +19,7 @@ export default function App() {
       <main>
         <Hero />
         <ProblemSolution />
+        <Inventory />
         <Features />
         <AvailabilityShowcase />
         <ContactForm />
