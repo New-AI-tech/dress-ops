@@ -3,7 +3,7 @@ import { Menu, X, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/src/lib/utils';
 
-export default function Navbar() {
+export default function Navbar({ onAdminToggle, currentView }: { onAdminToggle: () => void, currentView: 'public' | 'admin' }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -30,7 +30,7 @@ export default function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <span className="text-2xl font-serif font-bold tracking-tighter text-gold">
             FARYAL AL HOSARY
           </span>
@@ -39,7 +39,7 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
+          {currentView === 'public' && navLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}
@@ -49,8 +49,11 @@ export default function Navbar() {
             </a>
           ))}
           <div className="flex items-center gap-4 ml-4">
-            <button className="text-sm font-medium text-ivory/70 hover:text-gold transition-colors uppercase tracking-widest">
-              Sign In
+            <button 
+              onClick={onAdminToggle}
+              className="text-sm font-medium text-gold hover:text-gold-light transition-colors uppercase tracking-widest border border-gold/20 px-4 py-2 rounded-full"
+            >
+              {currentView === 'public' ? 'Admin Portal' : 'Exit Admin'}
             </button>
             <button className="bg-gold hover:bg-gold-light text-charcoal px-6 py-2 rounded-full text-sm font-bold transition-all transform hover:scale-105 uppercase tracking-widest">
               Request Access
