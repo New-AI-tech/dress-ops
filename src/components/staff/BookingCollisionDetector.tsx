@@ -41,6 +41,7 @@ const BookingCollisionDetector = () => {
   const [collision, setCollision] = useState<Booking | null>(null);
   const [isBufferCollision, setIsBufferCollision] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
 
   useEffect(() => {
     if (search.length >= 2) {
@@ -119,6 +120,7 @@ const BookingCollisionDetector = () => {
 
     try {
       setLoading(true);
+      setBookingError(null);
       const { error } = await supabase
         .from('bookings')
         .insert([{
@@ -134,6 +136,7 @@ const BookingCollisionDetector = () => {
       navigate('/staff/dashboard');
     } catch (err: any) {
       console.error('CRITICAL_BOOKING_FAILURE:', err.message);
+      setBookingError(err.message);
     } finally {
       setLoading(false);
     }
@@ -264,13 +267,13 @@ const BookingCollisionDetector = () => {
                 <div className="flex items-center gap-3 text-red-500">
                   <AlertCircle className="w-5 h-5" />
                   <p className="text-sm font-bold uppercase tracking-widest">
-                    {isBufferCollision ? 'Maintenance Buffer' : 'Collision Detected'}
+                    {isBufferCollision ? 'Maintenance/Steaming' : 'Collision Detected'}
                   </p>
                 </div>
                 <div className="text-xs text-stone-400 space-y-2">
                   <p>
                     {isBufferCollision 
-                      ? "Date Blocked: Maintenance Buffer required after previous rental" 
+                      ? "Date Blocked: 24-Hour Maintenance Buffer required after previous rental" 
                       : `Overlaps with existing booking for ${collision.customer_name}`}
                   </p>
                   <p className="font-mono">Timeline Block: {new Date(collision.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} → {new Date(collision.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
@@ -292,6 +295,13 @@ const BookingCollisionDetector = () => {
               </div>
             )}
           </div>
+
+          {bookingError && (
+            <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-sm flex items-center gap-3 text-red-500 text-xs font-bold uppercase tracking-widest">
+              <AlertCircle className="w-4 h-4" />
+              {bookingError}
+            </div>
+          )}
 
           <button 
             disabled={!selectedDress || !!collision || !startDate || !endDate || !clientName || loading}

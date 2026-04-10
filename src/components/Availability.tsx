@@ -86,9 +86,9 @@ export default function Availability({ dressId }: { dressId: string }) {
       setBookingSuccess(true);
       setBookedDates(prev => [...prev, selectedDate]);
       setTimeout(() => setBookingSuccess(false), 3000);
-    } catch (error) {
-      console.error('Error creating booking:', error);
-      alert('This date is no longer available. Please select another.');
+    } catch (error: any) {
+      console.error('Error creating booking:', error.message);
+      alert(`Booking Failed: ${error.message}`);
       fetchBookings(); // Refresh to get latest state
     } finally {
       setIsBooking(false);
@@ -143,7 +143,7 @@ export default function Availability({ dressId }: { dressId: string }) {
               key={dateStr}
               disabled={isBooked || isPast || isBuffer}
               onClick={() => setSelectedDate(dateStr)}
-              title={isBuffer ? "Buffer day for maintenance/steaming" : undefined}
+              title={isBuffer ? "Maintenance/Steaming Buffer" : undefined}
               className={cn(
                 "aspect-square rounded-sm text-xs transition-all flex items-center justify-center relative group border",
                 (isBooked || isPast) 
@@ -184,7 +184,7 @@ export default function Availability({ dressId }: { dressId: string }) {
           <div className="space-y-4">
             {bufferDates.includes(selectedDate) && (
               <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest text-center">
-                Invalid Date: 24-hour maintenance buffer required
+                Invalid Date: 24-Hour Maintenance/Steaming Buffer required
               </p>
             )}
             <button
@@ -195,7 +195,7 @@ export default function Availability({ dressId }: { dressId: string }) {
               {isBooking ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
               ) : bufferDates.includes(selectedDate) ? (
-                "Maintenance Buffer Required"
+                "Maintenance/Steaming Required"
               ) : (
                 <>Confirm Reservation: {new Date(selectedDate).toLocaleDateString()}</>
               )}
