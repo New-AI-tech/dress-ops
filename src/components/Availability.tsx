@@ -12,6 +12,7 @@ interface Booking {
 
 export default function Availability({ dressId }: { dressId: string }) {
   const [bookedDates, setBookedDates] = useState<string[]>([]);
+  const [bufferDates, setBufferDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isBooking, setIsBooking] = useState(false);
@@ -34,9 +35,21 @@ export default function Availability({ dressId }: { dressId: string }) {
       if (error) throw error;
       if (data) {
         const dates: string[] = [];
+        const buffers: string[] = [];
         data.forEach(b => {
           const start = new Date(b.start_date);
           const end = new Date(b.end_date);
+          
+          // Buffer day preceding the booking
+          const preceding = new Date(start);
+          preceding.setDate(preceding.getDate() - 1);
+          buffers.push(preceding.toISOString().split('T')[0]);
+
+          // Buffer day following the booking
+          const following = new Date(end);
+          following.setDate(following.getDate() + 1);
+          buffers.push(following.toISOString().split('T')[0]);
+
           const current = new Date(start);
           while (current <= end) {
             dates.push(current.toISOString().split('T')[0]);
@@ -44,6 +57,7 @@ export default function Availability({ dressId }: { dressId: string }) {
           }
         });
         setBookedDates(dates);
+        setBufferDates(buffers);
       }
     } catch (error) {
       console.error('Error fetching bookings:', error);
@@ -119,6 +133,7 @@ export default function Availability({ dressId }: { dressId: string }) {
         ))}
         {days.map((dateStr) => {
           const isBooked = bookedDates.includes(dateStr);
+          const isBuffer = bufferDates.includes(dateStr) && !isBooked;
           const isSelected = selectedDate === dateStr;
           const dayNum = new Date(dateStr).getDate();
           const isPast = new Date(dateStr) < new Date(today.setHours(0,0,0,0));
@@ -126,20 +141,26 @@ export default function Availability({ dressId }: { dressId: string }) {
           return (
             <button
               key={dateStr}
-              disabled={isBooked || isPast}
+              disabled={isBooked || isPast || isBuffer}
               onClick={() => setSelectedDate(dateStr)}
+              title={isBuffer ? "Buffer day for maintenance/steaming" : undefined}
               className={cn(
                 "aspect-square rounded-sm text-xs transition-all flex items-center justify-center relative group border",
-                isBooked || isPast 
+                (isBooked || isPast) 
                   ? "bg-stone-900/50 border-stone-800/50 text-stone-700 cursor-not-allowed" 
-                  : isSelected 
-                    ? "bg-gold text-black border-gold shadow-[0_0_20px_rgba(212,175,55,0.2)]"
-                    : "bg-black border-stone-800 text-stone-400 hover:border-gold/50 hover:text-gold"
+                  : isBuffer
+                    ? "bg-stone-900/30 border-stone-800/30 text-stone-600 cursor-not-allowed grayscale"
+                    : isSelected 
+                      ? "bg-gold text-black border-gold shadow-[0_0_20px_rgba(212,175,55,0.2)]"
+                      : "bg-black border-stone-800 text-stone-400 hover:border-gold/50 hover:text-gold"
               )}
             >
               {dayNum}
               {isBooked && (
                 <div className="absolute top-1 right-1 w-1 h-1 rounded-full bg-red-500/30" />
+              )}
+              {isBuffer && (
+                <div className="absolute bottom-1 w-1 h-1 rounded-full bg-stone-700" />
               )}
             </button>
           );
@@ -154,20 +175,32 @@ export default function Availability({ dressId }: { dressId: string }) {
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-stone-800" /> Reserved
           </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-stone-900/30 border border-stone-800" /> Buffer
+          </div>
         </div>
 
         {selectedDate && (
-          <button
-            onClick={handleBook}
-            disabled={isBooking}
-            className="w-full bg-transparent border border-gold text-gold hover:bg-gold hover:text-black py-4 rounded-sm text-xs font-bold uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3"
-          >
-            {isBooking ? (
-              <RefreshCw className="w-4 h-4 animate-spin" />
-            ) : (
-              <>Confirm Reservation: {new Date(selectedDate).toLocaleDateString()}</>
+          <div className="space-y-4">
+            {bufferDates.includes(selectedDate) && (
+              <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest text-center">
+                Invalid Date: 24-hour maintenance buffer required
+              </p>
             )}
-          </button>
+            <button
+              onClick={handleBook}
+              disabled={isBooking || bufferDates.includes(selectedDate)}
+              className="w-full bg-transparent border border-gold text-gold hover:bg-gold hover:text-black disabled:border-stone-800 disabled:text-stone-700 disabled:hover:bg-transparent py-4 rounded-sm text-xs font-bold uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3"
+            >
+              {isBooking ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : bufferDates.includes(selectedDate) ? (
+                "Maintenance Buffer Required"
+              ) : (
+                <>Confirm Reservation: {new Date(selectedDate).toLocaleDateString()}</>
+              )}
+            </button>
+          </div>
         )}
 
         {bookingSuccess && (

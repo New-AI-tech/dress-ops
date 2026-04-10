@@ -88,8 +88,8 @@ const BookingCollisionDetector = () => {
       const bStart = new Date(b.start_date).getTime();
       const bEnd = new Date(b.end_date).getTime();
       
-      // Default cleaning buffer of 48 hours
-      const bBufferEnd = bEnd + (48 * 60 * 60 * 1000);
+      // Default cleaning buffer of 24 hours
+      const bBufferEnd = bEnd + (24 * 60 * 60 * 1000);
 
       // Check if requested interval overlaps with booking interval (including buffer)
       return (
@@ -262,7 +262,7 @@ const BookingCollisionDetector = () => {
                 <div className="text-xs text-stone-400 space-y-2">
                   <p>Overlaps with existing booking for <span className="text-white font-bold">{collision.customer_name}</span></p>
                   <p className="font-mono">Timeline Block: {new Date(collision.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} → {new Date(collision.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
-                  <p className="text-[10px] text-red-500/60 uppercase font-bold tracking-tighter">Includes 48hr Cleaning SLA</p>
+                  <p className="text-[10px] text-red-500/60 uppercase font-bold tracking-tighter">Includes 24hr Maintenance Buffer</p>
                 </div>
               </div>
             ) : startDate && endDate ? (
@@ -286,7 +286,7 @@ const BookingCollisionDetector = () => {
             onClick={handleCreateBooking}
             className="w-full bg-gold disabled:bg-stone-900 disabled:text-stone-700 text-black py-4 rounded-sm text-xs font-bold uppercase tracking-[0.3em] transition-all hover:bg-gold-light"
           >
-            {loading ? 'Securing Reservation...' : 'Secure Temporal Binding'}
+            {loading ? 'Securing Reservation...' : collision ? 'Invalid Date: 24-hour maintenance buffer required' : 'Secure Temporal Binding'}
           </button>
         </div>
       </div>
