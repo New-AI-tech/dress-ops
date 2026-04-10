@@ -31,6 +31,8 @@ const DressOnboarding = () => {
 
   const [formData, setFormData] = useState({
     name: '',
+    designer: '',
+    internal_code: '',
     size: '',
     price: '',
     status: 'Available',
@@ -134,7 +136,7 @@ const DressOnboarding = () => {
             className="space-y-8"
           >
             {currentStep === 1 && (
-              <div className="grid md:grid-cols-1 gap-8">
+              <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Display Name</label>
                   <input 
@@ -143,6 +145,26 @@ const DressOnboarding = () => {
                     onChange={handleInputChange}
                     className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
                     placeholder="e.g. Ivory Mermaid Gown"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Designer</label>
+                  <input 
+                    name="designer"
+                    value={formData.designer}
+                    onChange={handleInputChange}
+                    className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
+                    placeholder="e.g. Elie Saab"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-xs font-bold text-stone-500 uppercase tracking-widest">Internal Asset Code</label>
+                  <input 
+                    name="internal_code"
+                    value={formData.internal_code}
+                    onChange={handleInputChange}
+                    className="w-full bg-black border border-stone-800 px-4 py-3 text-white focus:border-gold outline-none"
+                    placeholder="e.g. FARYAL-2024-001"
                   />
                 </div>
               </div>
