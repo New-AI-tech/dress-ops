@@ -39,6 +39,7 @@ const BookingCollisionDetector = () => {
   const [clientName, setClientName] = useState('');
   
   const [collision, setCollision] = useState<Booking | null>(null);
+  const [isBufferCollision, setIsBufferCollision] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -78,12 +79,14 @@ const BookingCollisionDetector = () => {
   const checkCollision = () => {
     if (!startDate || !endDate || !bookings.length) {
       setCollision(null);
+      setIsBufferCollision(false);
       return;
     }
 
     const requestedStart = new Date(startDate).getTime();
     const requestedEnd = new Date(endDate).getTime();
 
+    let bufferConflict = false;
     const conflict = bookings.find(b => {
       const bStart = new Date(b.start_date).getTime();
       const bEnd = new Date(b.end_date).getTime();
@@ -91,15 +94,24 @@ const BookingCollisionDetector = () => {
       // Default cleaning buffer of 24 hours
       const bBufferEnd = bEnd + (24 * 60 * 60 * 1000);
 
-      // Check if requested interval overlaps with booking interval (including buffer)
-      return (
-        (requestedStart >= bStart && requestedStart <= bBufferEnd) ||
-        (requestedEnd >= bStart && requestedEnd <= bBufferEnd) ||
-        (requestedStart <= bStart && requestedEnd >= bBufferEnd)
+      const isDirectOverlap = (
+        (requestedStart >= bStart && requestedStart <= bEnd) ||
+        (requestedEnd >= bStart && requestedEnd <= bEnd) ||
+        (requestedStart <= bStart && requestedEnd >= bEnd)
       );
+
+      const isBufferOverlap = !isDirectOverlap && (
+        (requestedStart > bEnd && requestedStart <= bBufferEnd) ||
+        (requestedEnd > bEnd && requestedEnd <= bBufferEnd)
+      );
+
+      if (isBufferOverlap) bufferConflict = true;
+
+      return isDirectOverlap || isBufferOverlap;
     });
 
     setCollision(conflict || null);
+    setIsBufferCollision(bufferConflict);
   };
 
   const handleCreateBooking = async () => {
@@ -121,13 +133,7 @@ const BookingCollisionDetector = () => {
       
       navigate('/staff/dashboard');
     } catch (err: any) {
-      console.error('CRITICAL_BOOKING_FAILURE:', {
-        message: err.message,
-        code: err.code,
-        details: err.details,
-        hint: err.hint,
-        postgres_error: err // Log the full error object for Postgres details
-      });
+      console.error('CRITICAL_BOOKING_FAILURE:', err.message);
     } finally {
       setLoading(false);
     }
@@ -257,10 +263,16 @@ const BookingCollisionDetector = () => {
               <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-sm space-y-4 animate-pulse">
                 <div className="flex items-center gap-3 text-red-500">
                   <AlertCircle className="w-5 h-5" />
-                  <p className="text-sm font-bold uppercase tracking-widest">Collision Detected</p>
+                  <p className="text-sm font-bold uppercase tracking-widest">
+                    {isBufferCollision ? 'Maintenance Buffer' : 'Collision Detected'}
+                  </p>
                 </div>
                 <div className="text-xs text-stone-400 space-y-2">
-                  <p>Overlaps with existing booking for <span className="text-white font-bold">{collision.customer_name}</span></p>
+                  <p>
+                    {isBufferCollision 
+                      ? "Date Blocked: Maintenance Buffer required after previous rental" 
+                      : `Overlaps with existing booking for ${collision.customer_name}`}
+                  </p>
                   <p className="font-mono">Timeline Block: {new Date(collision.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} → {new Date(collision.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                   <p className="text-[10px] text-red-500/60 uppercase font-bold tracking-tighter">Includes 24hr Maintenance Buffer</p>
                 </div>
@@ -286,7 +298,7 @@ const BookingCollisionDetector = () => {
             onClick={handleCreateBooking}
             className="w-full bg-gold disabled:bg-stone-900 disabled:text-stone-700 text-black py-4 rounded-sm text-xs font-bold uppercase tracking-[0.3em] transition-all hover:bg-gold-light"
           >
-            {loading ? 'Securing Reservation...' : collision ? 'Invalid Date: 24-hour maintenance buffer required' : 'Secure Temporal Binding'}
+            {loading ? 'Securing Reservation...' : isBufferCollision ? 'Date Blocked: Maintenance Buffer' : collision ? 'Collision Detected' : 'Secure Temporal Binding'}
           </button>
         </div>
       </div>

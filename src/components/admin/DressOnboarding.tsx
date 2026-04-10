@@ -56,15 +56,20 @@ const DressOnboarding = () => {
       const { error: insertError } = await supabase
         .from('dresses')
         .insert([{
-          ...formData,
+          name: formData.name,
           price: parseFloat(formData.price),
+          size: formData.size,
+          designer: formData.designer,
+          internal_code: formData.internal_code,
+          image_url: formData.image_url,
+          status: 'Available'
         }]);
 
       if (insertError) throw insertError;
 
       setSuccess(true);
     } catch (err: any) {
-      console.error('Onboarding error:', err);
+      console.error('Onboarding error:', err.message);
       setError(err.message || 'Failed to initialize asset registry entry.');
     } finally {
       setLoading(false);
